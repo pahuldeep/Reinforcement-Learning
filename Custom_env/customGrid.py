@@ -176,4 +176,5 @@ class GridworldEnv():
             plt.axis('off')
             plt.show()
 
-        
+    def close(self):
+        self.render(close=True)

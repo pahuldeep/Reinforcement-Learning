@@ -8,9 +8,9 @@ step_num = 1
 
 # Run one episode
 while not done:
-    # Sample a random action from the action space
+
     action = env.action_space.sample()
-    next_obs, reward, done, info = env.step(action)
+    next_observation, reward, done, info = env.step(action)
     
     print(f"step#:{step_num} reward:{reward} done:{done} info:{info}")
         
