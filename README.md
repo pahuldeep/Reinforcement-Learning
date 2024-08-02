@@ -8,7 +8,7 @@ The primary objective is to gain familiarity with different RL environments, und
 
 ### Prerequisites
 
-Ensure you have development dependencies installed. You can download it from source sites.
+Ensure you have dependencies installed. You can download it from source sites.
 
 ### Installation
 
