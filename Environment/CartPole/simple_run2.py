@@ -3,7 +3,7 @@ import gymnasium as gym
 env = gym.make('CartPole-v1', render_mode="human")
 obs = env.reset()
 
-for step_num in range(100): 
+for step_num in range(200): 
     env.render()
     
     # Take a random action
@@ -17,6 +17,5 @@ for step_num in range(100):
         obs = env.reset()
 
 env.close()
-
 
 
