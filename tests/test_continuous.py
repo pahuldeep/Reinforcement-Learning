@@ -1,6 +1,5 @@
-
-from agent import ContinuousAgent
-from utils.eval import evaluate
+from continuous_model.agent import ContinuousAgent
+from myutils.eval import evaluate
 import gymnasium as gym
 
 env = gym.make("MountainCarContinuous-v0")

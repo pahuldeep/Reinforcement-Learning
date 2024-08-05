@@ -14,5 +14,7 @@ def evaluate(agent, env, render=True):
 
         if render:
             env.render()
+
+        print(f"steps: {step_num} reward: {episode_reward} done: {done} info: {info}")
         
     return step_num, episode_reward, done, info
