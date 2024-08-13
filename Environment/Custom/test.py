@@ -4,7 +4,7 @@ env = GridworldEnv()
 obs = env.reset()
     
 done = False
-step_num = 1
+step_num = 0
 
 # Run one episode
 while not done:

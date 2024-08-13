@@ -3,9 +3,9 @@ from tensorflow import keras
 
 class Brain(keras.Model):
     
-    def __init__(self, action_dim = 5, input_shape = (1, 8 * 8)):
+    def __init__(self, action_dim, input_dim):
         super(Brain, self).__init__()
-        self.dense1 = keras.layers.Dense(32, input_shape=input_shape, activation="relu")
+        self.dense1 = keras.layers.Dense(32, input_shape=input_dim, activation="relu")
         self.logits = keras.layers.Dense(action_dim)
 
     def call(self, inputs):

@@ -61,7 +61,7 @@ import numpy as np
 # THIS IS FOR BINARY POLICY DISTRIBUTION
 binary_policy = bernoulli(0.5)
 
-print("Binary Policy Distribution:")
+print("\nBinary Policy Distribution:")
 for i in range(5):
     action = binary_policy.rvs()
     print("Single-Action:", action)
@@ -93,7 +93,7 @@ for _ in range(5):
     print('Single: ', action)
 print()
 
-# THIS IS FOR MULTIVARIATE NORMAL DISTRIBUTION
+# THIS IS FOR CONTINUOUS MULTIVARIATE NORMAL DISTRIBUTION
 mu = [0.0, 0.0]
 covariance_diag = [3.0, 3.0]
 covariance_matrix = np.diag(covariance_diag)

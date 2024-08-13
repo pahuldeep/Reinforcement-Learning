@@ -17,17 +17,12 @@ class ContinuousPolicy(object):
 class Continuous_Multi_Policy(object):
     def __init__(self, num_actions):
         self.action_dim = num_actions
-
+    
     def sample(self, mu, covariance_diag):
-        mu = tf.convert_to_tensor(mu, dtype=tf.float32)
-        covariance_diag = tf.convert_to_tensor(covariance_diag, dtype=tf.float32)
-        sigma = tf.sqrt(covariance_diag)
-
-        mu_np = mu.numpy()
-        sigma_np = sigma.numpy()
-
-        samples = np.random.normal(mu_np, sigma_np, size=(1, self.action_dim))
-        return samples
+        noise = tf.random.normal(shape=(self.action_dim,), mean=0.0, stddev=1.0)
+        # Scale and shift the noise to match the mean and covariance
+        action = mu + noise * tf.sqrt(covariance_diag)
+        return action
     
     def get_action(self, mu, covariance_diag):
         action = self.sample(mu, covariance_diag)

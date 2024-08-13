@@ -1,6 +1,6 @@
 import gymnasium as gym
 
-env = gym.make('FrozenLake-v1', map_name="4x4", is_slippery=False, render_mode="human")
+env = gym.make('FrozenLake-v1', render_mode="human")
 
 obs = env.reset()
 

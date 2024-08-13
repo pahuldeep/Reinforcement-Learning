@@ -2,6 +2,7 @@ import numpy as np
 import copy
 import gymnasium as gym
 
+# Define constants
 EMPTY = BLACK = 0
 WALL = GRAY = 1
 AGENT = BLUE = 2 
@@ -24,8 +25,7 @@ UP = 2
 LEFT = 3
 RIGHT = 4
 
-class GridworldEnv():
-
+class GridworldEnv(gym.Env):
     def __init__(self, max_steps=100):
         # Observations
         self.grid_layout = """  1 1 1 1 1 1 1 1
@@ -56,15 +56,14 @@ class GridworldEnv():
             RIGHT: [0, 1],
         }
 
-        (self.agent_start_state, self.agent_goal_state,) = self.get_state()
+        self.agent_state, self.agent_goal_state = self.get_state()
 
-         # To keep track of number of steps
+        # To keep track of number of steps
         self.step_num = 0 
         self.max_steps = max_steps
         self.done = False
         self.info = {"status": "Live"}
         self.viewer = None
-
 
     def step(self, action):
         """return next observation, reward, done, info"""
@@ -100,17 +99,20 @@ class GridworldEnv():
             done = True
             reward = -1
 
-        self.render("human")
         self.grid_state[self.agent_state[0], self.agent_state[1]] = EMPTY
         self.agent_state = copy.deepcopy(next_obs)
+        self.grid_state[self.agent_state[0], self.agent_state[1]] = AGENT
 
+        self.step_num += 1
+        if self.step_num >= self.max_steps:
+            done = True
+        
+        self.render("human")
         return self.grid_state, reward, done, info
-    
 
     def reset(self):
         self.grid_state = copy.deepcopy(self.initial_grid_state)
-
-        (self.agent_state,self.agent_goal_state,) = self.get_state()
+        self.agent_state, self.agent_goal_state = self.get_state()
 
         self.step_num = 0
         self.done = False
@@ -119,33 +121,28 @@ class GridworldEnv():
         return self.grid_state
 
     def get_state(self):
-
         start_state = np.where(self.grid_state == AGENT)
         goal_state = np.where(self.grid_state == GOAL)
 
-        start_or_goal_not_found = not(start_state[0] and goal_state[0])
-        if start_or_goal_not_found:
-            print("Start and/or Goal state not present in the Grid_world")
+        if not(start_state[0].size and goal_state[0].size):
+            raise ValueError("Start and/or Goal state not present in the Grid_world")
 
         start_state = (start_state[0][0], start_state[1][0])
         goal_state = (goal_state[0][0], goal_state[1][0])
 
         return start_state, goal_state
     
-    
     def gridarray_to_image(self, img_shape=None):
-
         if img_shape is None:
             img_shape = self.img_shape
 
-        observation = np.random.randn(*img_shape) * 0.0
+        observation = np.zeros(img_shape)
         scale_x = int(observation.shape[0] / self.grid_state.shape[0])
         scale_y = int(observation.shape[1] / self.grid_state.shape[1])
 
         for i in range(self.grid_state.shape[0]):
             for j in range(self.grid_state.shape[1]):
                 for k in range(3):  # 3-channel RGB image
-
                     pixel_value = COLOR_MAP[self.grid_state[i, j]][k]
                     observation[
                         i * scale_x : (i + 1) * scale_x,
@@ -155,7 +152,7 @@ class GridworldEnv():
 
         return (255 * observation).astype(np.uint8)
     
-    def render(self, mode = "human", close = False):
+    def render(self, mode="human", close=False):
         if close:
             if self.viewer is not None:
                 self.viewer.close()
@@ -169,9 +166,6 @@ class GridworldEnv():
         
         elif mode == "human":
             import matplotlib.pyplot as plt
-
-            if self.viewer is None:
-                self.viewer = plt.figure()
             plt.imshow(img)
             plt.axis('off')
             plt.show()
