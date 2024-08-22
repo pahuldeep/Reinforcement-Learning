@@ -5,8 +5,8 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import gymnasium as gym
 # import tensorflow as tf
 
-from discrete_model.policy import DiscretePolicy
-from discrete_model.agent import DiscreteAgent
+from model_discrete.policy import DiscretePolicy
+from model_discrete.agent import DiscreteAgent
 from myutils.eval import evaluate_agent
 
 env = gym.make('FrozenLake-v1', render_mode="human")
