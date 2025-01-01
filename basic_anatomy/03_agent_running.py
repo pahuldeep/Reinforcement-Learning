@@ -4,7 +4,6 @@ class Envirnoment:
     def __init__(self):
         self.total_steps = 10
         
-    # only binary
     def get_actions(self):
         return [ 0, 1 ]
     

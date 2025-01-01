@@ -10,6 +10,12 @@ MINE = RED = 3
 GOAL = GREEN = 4
 SUCCESS = PINK = 5
 
+NOOP = 0
+DOWN = 1
+UP = 2
+LEFT = 3
+RIGHT = 4
+
 COLOR_MAP = {
     BLACK: [0.0, 0.0, 0.0],
     GRAY: [0.5, 0.5, 0.5],
@@ -19,13 +25,8 @@ COLOR_MAP = {
     PINK: [1.0, 0.0, 1.0],
 }
 
-NOOP = 0
-DOWN = 1
-UP = 2
-LEFT = 3
-RIGHT = 4
-
 class GridworldEnv(gym.Env):
+    
     def __init__(self, max_steps=100):
         # Observations
         self.grid_layout = """  1 1 1 1 1 1 1 1
