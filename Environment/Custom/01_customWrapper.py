@@ -13,8 +13,9 @@ class RandomActionWrapper(gym.ActionWrapper):
         return action 
 
 if __name__ == "__main__":
-    
-    env = RandomActionWrapper(gym.make("CartPole-v1"))
+
+    env = gym.make("CartPole-v1")
+    env = RandomActionWrapper(env, randomness=0.5)
 
     observation, info = env.reset()
     total_reward = 0
