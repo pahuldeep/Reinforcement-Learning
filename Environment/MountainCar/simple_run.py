@@ -1,6 +1,7 @@
 import gymnasium as gym
 
-env = gym.make("MountainCarContinuous-v0", render_mode="human")
+env = gym.make("MountainCarContinuous-v0", render_mode="rgb_array")
+env = gym.wrappers.HumanRendering(env)
 observation = env.reset()
 
 total_reward = 0

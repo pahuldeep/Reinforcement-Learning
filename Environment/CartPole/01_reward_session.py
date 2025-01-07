@@ -1,11 +1,9 @@
 import gymnasium as gym
 
 env = gym.make("CartPole-v1")
-
+observe = env.reset()
 total_reward = 0
 total_step = 0
-
-observe = env.reset()
 
 while True:
     actions = env.action_space.sample()

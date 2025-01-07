@@ -166,11 +166,11 @@ class GridworldEnv(gym.Env):
             return img
         
         elif mode == "human":
-            print("Not define")
-            # import matplotlib.pyplot as plt
-            # plt.imshow(img)
-            # plt.axis('off')
-            # plt.show()
+            # print("Not define")
+            import matplotlib.pyplot as plt
+            plt.imshow(img)
+            plt.axis('off')
+            plt.show()
 
     def close(self):
         self.render(close=True)
