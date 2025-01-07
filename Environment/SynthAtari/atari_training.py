@@ -10,9 +10,9 @@ import torchvision.utils as vutils
 
 import gymnasium as gym
 
-from model import Generator, Discriminator
-from atari_batch import InputWrapper, iterate_batches
-
+from atari_batch import iterate_batches
+from atari_model import Generator, Discriminator
+from atari_wrapper import InputWrapper
 
 log = gym.logger
 log.set_level(gym.logger.INFO)
@@ -28,7 +28,7 @@ IMAGE_SIZE = 64
 LEARNING_RATE = 0.0001
 REPORT_EVERY_ITER = 100
 SAVE_IMAGE_EVERY_ITER = 1000
-SAVE_MODEL_EVERY_ITER = 20000
+SAVE_MODEL_EVERY_ITER = 1000
 
 
 device = torch.device('cuda')
@@ -40,8 +40,8 @@ net_discr = Discriminator(input_shape=shape).to(device)
 net_gener = Generator(output_shape=shape).to(device)
 
 # # Load the saved model weights 
-# net_gener.load_state_dict(torch.load('generator_2k.pth')) 
-# net_discr.load_state_dict(torch.load('discriminator_2k.pth'))
+# net_gener.load_state_dict(torch.load('Environment\SynthAtari\generator_10k.pth')) 
+# net_discr.load_state_dict(torch.load('Environment\SynthAtari\discriminator_10k.pth'))
 
 objective = nn.BCELoss()
 
@@ -60,7 +60,7 @@ fake_labels_v = torch.zeros(BATCH_SIZE, device=device)
 ts_start = time.time()
 
 for batch_v in iterate_batches(envs):
-    # fake samples, input is 4D: batch, filters, x, y
+    # fake samples, input: batch, filters, x, y
     gen_input_v = torch.FloatTensor(BATCH_SIZE, LATENT_VECTOR_SIZE, 1, 1)
     gen_input_v.normal_(0, 1)
     gen_input_v = gen_input_v.to(device)

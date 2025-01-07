@@ -27,7 +27,6 @@ class Discriminator(nn.Module):
             nn.Conv2d(in_channels=DISCR_FILTERS * 8, out_channels=1, kernel_size=4, stride=1, padding=0),
             nn.Sigmoid()
         )
-
     def forward(self, x):
         conv_out = self.conv_pipe(x)
         return conv_out.view(-1, 1).squeeze(dim=1)
@@ -56,6 +55,5 @@ class Generator(nn.Module):
             nn.ConvTranspose2d(in_channels=GENER_FILTERS, out_channels=output_shape[0], kernel_size=4, stride=2, padding=1),
             nn.Tanh()
         )
-
     def forward(self, x):
         return self.pipe(x)
