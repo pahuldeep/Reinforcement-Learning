@@ -21,8 +21,7 @@ class customModel(nn.Module):
     def forward(self, x):
         return self.pipeline(x)
     
-
-        
+    
 if __name__ == "__main__":
 
     model = customModel(inputs=2, classes=3)

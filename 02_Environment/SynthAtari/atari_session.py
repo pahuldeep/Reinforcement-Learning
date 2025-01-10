@@ -5,10 +5,6 @@ import cv2
 from atari_model import Generator
 from atari_wrapper import InputWrapper
 
-LATENT_VECTOR_SIZE = 100
-ENV_NAME = "Breakout-v4"
-MAX_STEPS = 1000
-
 def load_generator(model_path, output_shape, device="cpu"):
     generator = Generator(output_shape=output_shape)
     generator.load_state_dict(torch.load(model_path, map_location=device))
@@ -17,8 +13,8 @@ def load_generator(model_path, output_shape, device="cpu"):
     return generator
 
 def action_from_generator(generated_frame, action_space):
-    action_value = np.mean(generated_frame)    
-
+    # action_value = np.mean(generated_frame)    
+    action_value = np.median(generated_frame)
     action = int((action_value + 1) / 2 * (action_space.sample() - 1))  # Normalize and scale
     action = np.clip(action, 0, action_space.n - 1)  
 
@@ -72,6 +68,11 @@ def run_atari_session(generator, env_name, max_steps, device="cpu"):
     print(f"Total Reward: {total_reward}")
 
 if __name__ == "__main__":
+
+    LATENT_VECTOR_SIZE = 100
+    ENV_NAME = "Breakout-v4"
+    MAX_STEPS = 1000
+    
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     
     # Load the generator model
@@ -79,6 +80,6 @@ if __name__ == "__main__":
     output_shape = env_temp.observation_space.shape
     env_temp.close()
 
-    generator = load_generator("Environment\SynthAtari\weight\generator_7k.pth", output_shape=output_shape, device=device)
+    generator = load_generator("Environment\SynthAtari\weight\generator_1k.pth", output_shape=output_shape, device=device)
     
     run_atari_session(generator, ENV_NAME, MAX_STEPS, device=device)

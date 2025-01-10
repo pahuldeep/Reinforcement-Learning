@@ -1,4 +1,4 @@
-from customGrid import GridworldEnv
+from scratch.customGrid import GridworldEnv
 
 env = GridworldEnv()
 obs = env.reset()

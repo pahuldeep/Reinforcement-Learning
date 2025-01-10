@@ -32,6 +32,7 @@ def generate_text(markov_chain, n_grams=2, length=100):
         generated_text += " " + next_word
         current_text.append(next_word)
         current_text = current_text[1:]  # Shift the window
+        
         seed = ' '.join(current_text)
 
     return generated_text

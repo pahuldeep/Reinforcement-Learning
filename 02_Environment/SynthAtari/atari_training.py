@@ -40,8 +40,8 @@ net_discr = Discriminator(input_shape=shape).to(device)
 net_gener = Generator(output_shape=shape).to(device)
 
 # # Load the saved model weights 
-# net_gener.load_state_dict(torch.load('Environment\SynthAtari\generator_10k.pth')) 
-# net_discr.load_state_dict(torch.load('Environment\SynthAtari\discriminator_10k.pth'))
+# net_gener.load_state_dict(torch.load('Environment\SynthAtari\weight\generator_k.pth')) 
+# net_discr.load_state_dict(torch.load('Environment\SynthAtari\weight\discriminator_k.pth'))
 
 objective = nn.BCELoss()
 

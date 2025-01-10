@@ -3,26 +3,26 @@ import copy
 import gymnasium as gym
 
 # Define constants
-EMPTY = BLACK = 0
-WALL = GRAY = 1
-AGENT = BLUE = 2 
-MINE = RED = 3
-GOAL = GREEN = 4
-SUCCESS = PINK = 5
+EMPTY =     BLACK = 0
+WALL =      GRAY = 1
+AGENT =     BLUE = 2 
+MINE =      RED = 3
+GOAL =      GREEN = 4
+SUCCESS =   PINK = 5
 
-NOOP = 0
-DOWN = 1
-UP = 2
-LEFT = 3
-RIGHT = 4
+NOOP    = 0
+DOWN    = 1
+UP      = 2
+LEFT    = 3
+RIGHT   = 4
 
 COLOR_MAP = {
-    BLACK: [0.0, 0.0, 0.0],
-    GRAY: [0.5, 0.5, 0.5],
-    BLUE: [0.0, 0.0, 1.0],
-    RED: [1.0, 0.0, 0.0],
-    GREEN: [0.0, 1.0, 0.0],
-    PINK: [1.0, 0.0, 1.0],
+    BLACK:  [0.0, 0.0, 0.0],
+    GRAY:   [0.5, 0.5, 0.5],
+    BLUE:   [0.0, 0.0, 1.0],
+    RED:    [1.0, 0.0, 0.0],
+    GREEN:  [0.0, 1.0, 0.0],
+    PINK:   [1.0, 0.0, 1.0],
 }
 
 class GridworldEnv(gym.Env):

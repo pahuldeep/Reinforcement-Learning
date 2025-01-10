@@ -4,27 +4,27 @@ class Envirnoment:
     def __init__(self):
         self.total_steps = 10
         
-    def get_actions(self):
-        return [ 0, 1 ]
+    def get_observation(self):
+        return [ 1, 2, 3, 4, 5 ]
     
     def done(self):
         return self.total_steps == 0
     
-    def action(self, action: int):
+    def action(self, action):
         self.total_steps -= 1
 
-        action_reward = random.random()
+        action_reward = action
         return action_reward
     
 class Agent:
     def __init__(self,):
         self.reward = 0
 
-    def step(self, env: Envirnoment):
-        actions = env.get_actions()                 # get from envirnoment
-        reward = env.action(random.choice(actions)) # doing in envirnoment  
+    def step(self, env):
+        actions = env.get_observation()
+        reward = env.action(random.choice(actions))     # doing in envirnoment  
         self.reward += reward
-        return actions
+        return reward
 
 
 if __name__ == "__main__":
@@ -33,7 +33,7 @@ if __name__ == "__main__":
     agent = Agent()
 
     while not env.done():
-        print("agents move:", agent.step(env))
+        print("observed moves:", agent.step(env))
 
     print("Total reward got: %.4f" % agent.reward)
 
