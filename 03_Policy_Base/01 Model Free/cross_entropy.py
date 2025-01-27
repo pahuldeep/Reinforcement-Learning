@@ -1,3 +1,4 @@
+# book author: Maxim Lapan
 import typing as tt 
 from dataclasses import dataclass
 
