@@ -40,6 +40,6 @@ def generate_text(markov_chain, n_grams=2, length=100):
 text = "This is an example text to demonstrate the Markov Chain. Markov Chains are a probabilistic model."
 
 markov_model = generate_markov_chain(text, n_grams=2)
-generated_text = generate_text(markov_model, n_grams=2, length=20)
+generated_text = generate_text(markov_model, n_grams=2, length=10)
 
 print(generated_text)

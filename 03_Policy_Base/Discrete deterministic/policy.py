@@ -1,4 +1,5 @@
 import tensorflow as tf
+
 class DiscretePolicy(object):
     def __init__(self, num_actions):
         self.action_dim = num_actions

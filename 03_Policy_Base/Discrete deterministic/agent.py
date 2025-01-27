@@ -1,6 +1,5 @@
-import numpy as np
-from .brain import Brain
-from .policy import DiscretePolicy
+from brain import Brain
+from policy import DiscretePolicy
 
 class DiscreteAgent(object):
     def __init__(self, action_dim, input_dim):
