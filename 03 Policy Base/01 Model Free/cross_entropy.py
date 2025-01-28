@@ -11,9 +11,9 @@ from torch.utils.tensorboard.writer import SummaryWriter
 import numpy as np
 import gymnasium as gym
 
+
 HIDDEN_SIZE = 128 
 BATCH_SIZE = 16 
-PERCENTILE = 70
 
 class Net(nn.Module):
     def __init__(self, observation_size, hidden_size, num_action):
@@ -21,10 +21,44 @@ class Net(nn.Module):
         self.net = nn.Sequential(
             nn.Linear(observation_size, hidden_size),
             nn.ReLU(),
+            nn.Dropout(0.2),  # Add dropout regularize
             nn.Linear(hidden_size, num_action),
         )
     def forward(self, x):
         return self.net(x)
+
+# # Add Memory for Partial Observability
+# class RNNNet(nn.Module):
+#     def __init__(self, observation_size, hidden_size, num_action):
+#         super(RNNNet, self).__init__()
+#         self.lstm = nn.LSTM(observation_size, hidden_size, batch_first=True)
+#         self.linear = nn.Linear(hidden_size, num_action)
+
+#     def forward(self, x, hidden_state):
+#         out, hidden_state = self.lstm(x, hidden_state)
+#         action_scores = self.linear(out)
+#         return action_scores, hidden_state
+
+# # Scalable to continuous action
+# class ContinuousNet(nn.Module):
+#     def __init__(self, observation_size, hidden_size, action_size):
+#         super(ContinuousNet, self).__init__()
+#         self.net = nn.Sequential(
+#             nn.Linear(observation_size, hidden_size),
+#             nn.ReLU(),
+#             nn.Linear(hidden_size, action_size)
+#         )
+#         self.log_std = nn.Parameter(torch.zeros(action_size))  # Learnable std
+
+#     def forward(self, x):
+#         mean = self.net(x)
+#         std = self.log_std.exp()
+#         return mean, std
+
+# # Sampling Actions in iteration batch
+# mean, std = net(observe.unsqueeze(0))
+# action = torch.normal(mean, std).detach().numpy()
+
     
 @dataclass
 class EpisodeSteps:
@@ -36,7 +70,16 @@ class Episode:
     reward: float
     steps: tt.List[EpisodeSteps]
 
+def compute_entropy(probs):
+    return -torch.sum(probs * torch.log(probs + 1e-9), dim=1).mean()
+
+def adaptive_percentile(iter_no, start=90, end=50, decay=0.01):
+    return max(end, start - decay * iter_no * (start - end))
     
+def shaped_reward(env, reward, is_done):
+    progress_reward = env.unwrapped.state[2] * 10  
+    return reward + progress_reward if not is_done else reward
+
 def iterate_batch(env, net, size):
     batch = []
     episode_reward = 0
@@ -51,6 +94,8 @@ def iterate_batch(env, net, size):
         
         action = np.random.choice(len(action_value), p=action_value)
         next_observation, reward, is_done, is_trunc, _ = env.step(action) 
+        
+        reward = shaped_reward(env, reward, is_done) # Sparse Reward Sensitivity
 
         episode_reward += reward
         step = EpisodeSteps(observe=observation, action=action)
@@ -71,6 +116,7 @@ def iterate_batch(env, net, size):
 
 def filter_batch(batch, percent):
     rewards = list(map(lambda x: x.reward, batch))
+
     reward_bound = np.percentile(rewards, percent) 
     reward_mean = np.mean(rewards)
 
@@ -89,31 +135,50 @@ def filter_batch(batch, percent):
     return train_observation_value, train_action_value, reward_bound, reward_mean
 
 
+
+
 if __name__ == "__main__":
 
-    env = gym.make("CartPole-v1")
+    env = gym.make("CartPole-v1", render_mode="rgb_array")
+    # env = gym.wrappers.RecordVideo(env, video_folder="video_dir")
 
-    assert env.observation_space.shape is not None
+
     obs_size = env.observation_space.shape[0]
-    assert isinstance(env.action_space, gym.spaces.Discrete)
     n_actions = int(env.action_space.n)
 
     net = Net(obs_size, HIDDEN_SIZE, n_actions)
 
     objective = nn.CrossEntropyLoss()
     optimizer = optim.Adam(params=net.parameters(), lr=0.001)
+    
+    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.9)  # Hyperparameter Sensitivity
+
     writer = SummaryWriter(comment="-cartpole")
 
     for iter_no, batch in enumerate(iterate_batch(env, net, BATCH_SIZE)):
         
-        obs_v, acts_v, reward_b, reward_m = filter_batch(batch, PERCENTILE)
+        # Adaptive Percentile Threshold
+        current_percentile = adaptive_percentile(iter_no)
+        obs_v, acts_v, reward_b, reward_m = filter_batch(batch, current_percentile)
+        # obs_v, acts_v, reward_b, reward_m = filter_batch(batch, PERCENTILE) # fixed
+        
         optimizer.zero_grad()
-        
         action_scores_v = net(obs_v)
+
+        # Exploration-Exploitation Tradeoff
+        probs_v = nn.Softmax(dim=1)(action_scores_v)
+        entropy = compute_entropy(probs_v)
         
-        loss_v = objective(action_scores_v, acts_v)
+        # Poor Sample Efficiency
+        weights = torch.FloatTensor([episode.reward for episode in batch])
+        weights = weights / weights.sum()
+        loss_v = (objective(action_scores_v, acts_v) * weights).mean() - 0.001 * entropy # 0.01 is entropy weight
+
+        # loss_v = objective(action_scores_v, acts_v)
+
         loss_v.backward()
         optimizer.step()
+        scheduler.step() 
 
         print("%d: loss=%.3f, reward_mean=%.1f, rw_bound=%.1f" % (iter_no, loss_v.item(), reward_m, reward_b))
 
@@ -121,10 +186,9 @@ if __name__ == "__main__":
         writer.add_scalar("reward_bound", reward_b, iter_no)
         writer.add_scalar("reward_mean", reward_m, iter_no)
 
-        if reward_m > 30:
+        if reward_m > 38:
             print("Solved!")
             break
 
-    writer.close()
-    
+    writer.close()    
          
