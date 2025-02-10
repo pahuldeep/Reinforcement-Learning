@@ -89,6 +89,7 @@ def iterate_batch(env, net, size):
 
     while True:
         observe = torch.tensor(observation)
+
         action_probability = sm(net(observe.unsqueeze(0)))
         action_value = action_probability.data.numpy()[0]
         
@@ -134,14 +135,33 @@ def filter_batch(batch, percent):
 
     return train_observation_value, train_action_value, reward_bound, reward_mean
 
+# Run one episode and record the video
+def test_agent(env, net):
+    env = gym.wrappers.HumanRendering(env)
+    observation, _ = env.reset()
+    sm = nn.Softmax(dim=1)
 
+    total_reward = 0
+    while True:
+        env.render()  # Render the environment (optional for visualization)
+        observe = torch.tensor(observation, dtype=torch.float32)
+        action_probabilities = sm(net(observe.unsqueeze(0)))
+        action = torch.argmax(action_probabilities).item()  # Choose the most probable action
+
+        observation, reward, done, trunc, _ = env.step(action)
+        total_reward += reward
+
+        if done or trunc:
+            break
+
+    print(f"Total reward in test episode: {total_reward}")
+    env.close()
 
 
 if __name__ == "__main__":
 
     env = gym.make("CartPole-v1", render_mode="rgb_array")
     # env = gym.wrappers.RecordVideo(env, video_folder="video_dir")
-
 
     obs_size = env.observation_space.shape[0]
     n_actions = int(env.action_space.n)
@@ -191,4 +211,6 @@ if __name__ == "__main__":
             break
 
     writer.close()    
+
+    test_agent(env, net)
          

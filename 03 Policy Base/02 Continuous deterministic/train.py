@@ -65,13 +65,12 @@ def train(agent, env, max_steps=5000, render=False):
 
 
 if __name__ == "__main__":
-    # Create the environment
+
     env = gym.make("MountainCarContinuous-v0", render_mode="human")
 
     action_dim = 2 * env.action_space.shape[0]
     state_dim = env.observation_space.shape[0]
 
-    # Create the agent
     agent = ContinuousAgent(action_dim, state_dim)
 
     # Train the agent with periodic checkpoint saving

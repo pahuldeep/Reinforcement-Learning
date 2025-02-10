@@ -35,16 +35,11 @@ class StockTradingEnv(gym.Env):
     def _next_observation(self):
         # Get the stock data points for the last 5 days and scale to between 0-1
         frame = np.array([
-            self.df.loc[self.current_step: self.current_step +
-                        5, 'Open'].values / MAX_SHARE_PRICE,
-            self.df.loc[self.current_step: self.current_step +
-                        5, 'High'].values / MAX_SHARE_PRICE,
-            self.df.loc[self.current_step: self.current_step +
-                        5, 'Low'].values / MAX_SHARE_PRICE,
-            self.df.loc[self.current_step: self.current_step +
-                        5, 'Close'].values / MAX_SHARE_PRICE,
-            self.df.loc[self.current_step: self.current_step +
-                        5, 'Volume'].values / MAX_NUM_SHARES,
+            self.df.loc[self.current_step: self.current_step + 5, 'Open'].values / MAX_SHARE_PRICE,
+            self.df.loc[self.current_step: self.current_step + 5, 'High'].values / MAX_SHARE_PRICE,
+            self.df.loc[self.current_step: self.current_step + 5, 'Low'].values / MAX_SHARE_PRICE,
+            self.df.loc[self.current_step: self.current_step + 5, 'Close'].values / MAX_SHARE_PRICE,
+            self.df.loc[self.current_step: self.current_step + 5, 'Volume'].values / MAX_NUM_SHARES,
         ])
 
         # Append additional data and scale each value to between 0-1
@@ -135,10 +130,7 @@ class StockTradingEnv(gym.Env):
 
         print(f'Step: {self.current_step}')
         print(f'Balance: {self.balance}')
-        print(
-            f'Shares held: {self.shares_held} (Total sold: {self.total_shares_sold})')
-        print(
-            f'Avg cost for held shares: {self.cost_basis} (Total sales value: {self.total_sales_value})')
-        print(
-            f'Net worth: {self.net_worth} (Max net worth: {self.max_net_worth})')
+        print(f'Shares held: {self.shares_held} (Total sold: {self.total_shares_sold})')
+        print(f'Avg cost for held shares: {self.cost_basis} (Total sales value: {self.total_sales_value})')
+        print(f'Net worth: {self.net_worth} (Max net worth: {self.max_net_worth})')
         print(f'Profit: {profit}')
